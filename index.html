@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Práctica: análisis de gráficas de funciones · Décimo</title>
+<meta name="description" content="Práctica interactiva de análisis de gráficas de funciones: dominio, ámbito, crecimiento, interceptos y signo.">
+<style>
+:root{
+  --azul:#185FA5; --verde:#0F6E56; --gris:#f3f5f8; --borde:#cfd6df; --texto:#1b2430;
+  --ok:#0b7a43; --okbg:#e6f6ed; --mal:#b3261e; --malbg:#fdecea;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;font-family:"Century Gothic","Segoe UI",system-ui,-apple-system,Roboto,Arial,sans-serif;color:var(--texto);background:#fff;line-height:1.5}
+header.top{background:var(--azul);color:#fff;padding:18px 16px}
+header.top .in{max-width:980px;margin:0 auto}
+header.top small{display:block;opacity:.9;letter-spacing:.04em;text-transform:uppercase;font-size:.78rem}
+header.top h1{margin:.2rem 0 .1rem;font-size:1.55rem;line-height:1.25}
+header.top p{margin:0;opacity:.95;font-size:.92rem}
+main{max-width:980px;margin:0 auto;padding:16px}
+.indic{background:var(--gris);border:1px solid var(--borde);border-left:5px solid var(--verde);border-radius:8px;padding:12px 16px;margin-bottom:14px}
+.indic h2{margin:.1rem 0 .4rem;font-size:1.05rem;color:var(--verde)}
+.indic ul{margin:.2rem 0 .2rem 1.1rem;padding:0}
+.indic li{margin:.18rem 0}
+.indic code{background:#fff;border:1px solid var(--borde);border-radius:4px;padding:0 .3rem;font-size:.92em}
+.barra{position:sticky;top:0;z-index:20;background:#fff;border-bottom:1px solid var(--borde);box-shadow:0 2px 6px rgba(0,0,0,.06);padding:8px 16px}
+.barra .in{max-width:980px;margin:0 auto;display:flex;flex-wrap:wrap;gap:8px 14px;align-items:center}
+.simbolos{display:flex;flex-wrap:wrap;gap:5px;align-items:center}
+.simbolos span.t{font-size:.8rem;color:#55606e;margin-right:2px}
+.simbolos button{min-width:34px;height:34px;font-size:1.05rem;border:1px solid var(--borde);background:#fff;border-radius:6px;cursor:pointer;font-family:inherit}
+.simbolos button:hover{background:var(--gris)}
+.acciones{display:flex;flex-wrap:wrap;gap:6px;margin-left:auto;align-items:center}
+button.btn{font-family:inherit;font-size:.9rem;padding:7px 12px;border-radius:7px;border:1px solid var(--azul);background:#fff;color:var(--azul);cursor:pointer}
+button.btn.pri{background:var(--azul);color:#fff}
+button.btn:hover{filter:brightness(.96)}
+button.btn:focus-visible,.simbolos button:focus-visible,input:focus-visible{outline:3px solid #7fb2e5;outline-offset:1px}
+.puntaje{font-weight:700;color:var(--verde);min-width:9.5ch;text-align:right}
+article.ejer{border:1px solid var(--borde);border-radius:10px;margin:18px 0;padding:14px 16px 12px;background:#fff;break-inside:avoid}
+article.ejer h2{margin:0 0 .3rem;font-size:1.1rem;color:var(--azul)}
+article.ejer p{margin:.25rem 0}
+.graf{display:flex;justify-content:center;margin:6px 0 4px}
+svg.grafica{width:100%;height:auto;display:block}
+.campos{display:grid;grid-template-columns:1fr 1fr;grid-template-rows:repeat(5,auto);grid-auto-flow:column;gap:8px 22px;margin:8px 0}
+@media (max-width:700px){.campos{grid-template-columns:1fr;grid-template-rows:none;grid-auto-flow:row}}
+.campo label{display:block;font-size:.88rem;font-weight:600;margin-bottom:2px}
+.entrada{position:relative}
+.entrada input{width:100%;font:inherit;font-size:16px;padding:7px 30px 7px 9px;border:1.5px solid var(--borde);border-radius:7px;background:#fff}
+.entrada input.ok{border-color:var(--ok);background:var(--okbg)}
+.entrada input.bad{border-color:var(--mal);background:var(--malbg)}
+.marca{position:absolute;right:9px;top:50%;transform:translateY(-50%);font-weight:700}
+.marca.ok{color:var(--ok)} .marca.bad{color:var(--mal)}
+.sol{font-size:.86rem;color:var(--verde);margin-top:2px}
+.sol b{font-weight:700}
+.fila-btn{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:8px}
+.res{font-weight:700;color:var(--verde)}
+footer{max-width:980px;margin:10px auto 40px;padding:0 16px;color:#55606e;font-size:.85rem}
+@media (max-width:700px){.barra{position:static}.acciones{margin-left:0}}
+@media print{
+  .barra,.fila-btn{display:none}
+  header.top{background:#fff;color:#000;border-bottom:2px solid #000}
+  article.ejer{border-color:#000}
+  .entrada input{border:0;border-bottom:1px solid #000;border-radius:0;background:#fff}
+}
+</style>
+</head>
+<body>
+<header class="top"><div class="in">
+  <small>Vista Atenas High School · Décimo · II Semestre 2026</small>
+  <h1>Práctica: análisis de gráficas de funciones</h1>
+  <p>Profesor: Mauricio Torres Artavia</p>
+</div></header>
+
+<div class="barra"><div class="in">
+  <div class="simbolos" role="group" aria-label="Símbolos para escribir las respuestas">
+    <span class="t">Símbolos:</span>
+    <button type="button" data-ins="[" aria-label="corchete izquierdo">[</button>
+    <button type="button" data-ins="]" aria-label="corchete derecho">]</button>
+    <button type="button" data-ins="(" aria-label="paréntesis izquierdo">(</button>
+    <button type="button" data-ins=")" aria-label="paréntesis derecho">)</button>
+    <button type="button" data-ins="," aria-label="coma">,</button>
+    <button type="button" data-ins="-" aria-label="signo menos">−</button>
+    <button type="button" data-ins="∞" aria-label="infinito">∞</button>
+    <button type="button" data-ins=" ∪ " aria-label="unión">∪</button>
+    <button type="button" data-ins="ℝ" aria-label="números reales">ℝ</button>
+    <button type="button" data-ins="{" aria-label="llave izquierda">{</button>
+    <button type="button" data-ins="}" aria-label="llave derecha">}</button>
+  </div>
+  <div class="acciones">
+    <span class="puntaje" id="puntaje" aria-live="polite"></span>
+    <button type="button" class="btn pri" id="revTodo">Revisar todo</button>
+    <button type="button" class="btn" id="verTodo">Ver respuestas</button>
+    <button type="button" class="btn" id="borTodo">Borrar todo</button>
+  </div>
+</div></div>
+
+<main>
+  <section class="indic" aria-labelledby="ind">
+    <h2 id="ind">Indicaciones</h2>
+    <p>Con base en la gráfica de cada ejercicio, determine lo que se solicita.</p>
+    <ul>
+      <li>Exprese el dominio, el ámbito y las soluciones de las desigualdades en notación de intervalo: <code>]a, b[</code>, <code>[a, b[</code>, <code>]a, b]</code>, <code>[a, b]</code>.</li>
+      <li>Cuando haya más de un intervalo, únalos con <code>∪</code> (también puede escribir la letra <code>U</code>).</li>
+      <li>Los intervalos de crecimiento, decrecimiento y constancia se escriben abiertos.</li>
+      <li>Escriba la solución de f(x) = 0 como conjunto, entre llaves: <code>{a, b}</code>.</li>
+      <li>Escriba I<sub>x</sub> e I<sub>y</sub> como conjuntos de pares ordenados, entre llaves: <code>{(a, b), (c, d)}</code>.</li>
+      <li>Para el infinito escriba <code>∞</code> o <code>inf</code>; para todos los reales, <code>ℝ</code> o <code>R</code>.</li>
+      <li>Si no existe, escriba «no tiene».</li>
+      <li>Un círculo cerrado indica que el punto pertenece a la gráfica; un círculo abierto, que no pertenece. Una flecha indica que la gráfica continúa.</li>
+    </ul>
+  </section>
+  <div id="ejercicios"></div>
+</main>
+<footer>Práctica de análisis de gráficas · Vista Atenas High School. Sus respuestas se guardan solo en este navegador.</footer>
+<noscript><p style="padding:16px">Esta práctica necesita JavaScript activado para mostrar las gráficas.</p></noscript>
+
+<script>
+/* ===== Revisor de respuestas ===== */
+const Checker = (() => {
+  const NUM = '-?\\d+(?:\\.\\d+)?';
+  const INF = '[+-]?inf';
+
+  function norm(s) {
+    return String(s || '').toLowerCase()
+      .replace(/[−–—]/g, '-')
+      .replace(/∪/g, 'u').replace(/infinito/g, 'inf').replace(/∞/g, 'inf')
+      .replace(/ℝ/g, 'r').replace(/reales/g, 'r')
+      .replace(/;/g, ',')
+      .replace(/\s+/g, '');
+  }
+  const isNone = t => /^(notiene|noexiste|ninguno|ninguna|vacio|vacío|∅|ninguno\.)$/.test(t);
+  const val = (v, isLeft) => {
+    if (/inf/.test(v)) return v.startsWith('-') ? -Infinity : Infinity;
+    return parseFloat(v);
+  };
+
+  // Devuelve {none:true} | {ivs:[...]} | null (no se pudo interpretar)
+  function parseIntervals(raw) {
+    const t = norm(raw);
+    if (!t) return null;
+    if (isNone(t)) return { none: true };
+    // r  /  r-{a,b}
+    const mr = t.match(/^r(?:-\{([^}]*)\})?$/);
+    if (mr) {
+      const pts = mr[1] ? mr[1].split(',').filter(x => x !== '').map(Number).sort((a, b) => a - b) : [];
+      if (pts.some(isNaN)) return null;
+      const cuts = [-Infinity, ...pts, Infinity], ivs = [];
+      for (let i = 0; i < cuts.length - 1; i++) ivs.push({ lo: cuts[i], hi: cuts[i + 1], cl: false, cr: false });
+      return { ivs };
+    }
+    const IV = '[\\[\\]\\(](?:' + NUM + '|' + INF + '),(?:' + NUM + '|' + INF + ')[\\[\\]\\)]';
+    if (!new RegExp('^' + IV + '(?:u' + IV + ')*$').test(t)) return null;   // varios intervalos: solo con ∪
+    const re = new RegExp('([\\[\\]\\(])(' + NUM + '|' + INF + '),(' + NUM + '|' + INF + ')([\\[\\]\\)])', 'g');
+    const ivs = []; let m;
+    while ((m = re.exec(t)) !== null) {
+      const lo = val(m[2]), hi = val(m[3]);
+      if (!(lo <= hi)) return null;
+      ivs.push({ lo, hi, cl: m[1] === '[' && isFinite(lo), cr: m[4] === ']' && isFinite(hi) });
+    }
+    return ivs.length ? { ivs } : null;
+  }
+  const key = iv => `${iv.lo}|${iv.hi}|${iv.cl ? 'c' : 'o'}${iv.cr ? 'c' : 'o'}`;
+  function canonIntervals(p) {
+    if (!p) return null;
+    if (p.none) return 'NONE';
+    return p.ivs.map(key).sort().filter((k, i, a) => a.indexOf(k) === i).join(' ; ');
+  }
+
+  function parsePoints(raw) {
+    const t = norm(raw);
+    if (!t) return null;
+    const mb = t.match(/^\{(.*)\}$/);                       // entre llaves
+    if (!mb) return null;
+    const P = '\\(' + NUM + ',' + NUM + '\\)';
+    if (!new RegExp('^' + P + '(?:,' + P + ')*$').test(mb[1])) return null;
+    const re = new RegExp('\\((' + NUM + '),(' + NUM + ')\\)', 'g');
+    const out = []; let m;
+    while ((m = re.exec(mb[1])) !== null) out.push(parseFloat(m[1]) + ',' + parseFloat(m[2]));
+    return out.length ? out.sort().filter((k, i, a) => a.indexOf(k) === i).join(' ; ') : null;
+  }
+  function parseNumbers(raw) {
+    const t = norm(raw);
+    if (!t) return null;
+    if (isNone(t)) return 'NONE';
+    const mb = t.match(/^\{([^{}]*)\}$/);          // debe venir entre llaves
+    if (!mb) return null;
+    const m = mb[1].match(new RegExp(NUM, 'g'));
+    return m ? m.map(Number).sort((a, b) => a - b).filter((k, i, a) => a.indexOf(k) === i).join(' ; ') : null;
+  }
+
+  const canon = {
+    int: s => canonIntervals(parseIntervals(s)),
+    pts: parsePoints,
+    nums: parseNumbers
+  };
+  function check(type, answer, expected) {
+    const a = canon[type](answer);
+    if (a === null) return false;
+    return a === canon[type](expected);
+  }
+  return { check, canon, norm };
+})();
+
+
+
+/* ===== Datos de los ejercicios ===== */
+const CAMPOS = [
+  {id:'dom', et:'Dominio',        tipo:'int',  ph:']a, b['},
+  {id:'ran', et:'Ámbito',         tipo:'int',  ph:']a, b['},
+  {id:'inc', et:'Est. creciente', tipo:'int',  ph:']a, b[ ∪ ]c, d['},
+  {id:'dec', et:'Decreciente',    tipo:'int',  ph:']a, b[ ∪ ]c, d['},
+  {id:'con', et:'Constante',      tipo:'int',  ph:']a, b[  o  no tiene'},
+  {id:'ix',  et:'I<sub>x</sub>',  tipo:'pts',  ph:'{(a, 0), (c, 0)}'},
+  {id:'iy',  et:'I<sub>y</sub>',  tipo:'pts',  ph:'{(0, b)}'},
+  {id:'ge',  et:'f(x) ≥ 0',       tipo:'int',  ph:']a, b[ ∪ ]c, d['},
+  {id:'lt',  et:'f(x) &lt; 0',    tipo:'int',  ph:']a, b[ ∪ ]c, d['},
+  {id:'eq',  et:'f(x) = 0',       tipo:'nums', ph:'{a, b}'}
+];
+
+const sq = Math.sqrt;
+const EJ = [
+ { // 1. Poligonal
+  g:{xmin:-6,xmax:7,ymin:-3,ymax:5,
+     curves:[{pts:[[-5,2],[-3,-2],[0,4],[2,4],[4,0],[6,2]]}],
+     dots:[[-5,2,0],[6,2,1]]},
+  r:{dom:'[-5,6[',ran:'[-2,4]',inc:']-3,0[ ∪ ]4,6[',dec:']-5,-3[ ∪ ]2,4[',con:']0,2[',ix:'{(-4,0), (-2,0), (4,0)}',iy:'{(0,4)}',ge:'[-5,-4] ∪ [-2,6[',lt:']-4,-2[',eq:'{-4, -2, 4}'}
+ },
+ { // 2. Con saltos
+  g:{xmin:-6,xmax:7,ymin:-3,ymax:6,
+     curves:[{pts:[[-5,-2],[-1,2]]},{pts:[[-1,-1],[2,-1]]},{pts:[[2,1],[6,5]]}],
+     dots:[[-5,-2,0],[-1,2,1],[-1,-1,0],[2,-1,0],[2,1,1],[6,5,0]]},
+  r:{dom:'[-5,6]',ran:'[-2,5]',inc:']-5,-1[ ∪ ]2,6[',dec:'no tiene',con:']-1,2[',ix:'{(-3,0)}',iy:'{(0,-1)}',ge:'[-3,-1[ ∪ ]2,6]',lt:'[-5,-3[ ∪ [-1,2]',eq:'{-3}'}
+ },
+ { // 3. Parábola restringida
+  g:{xmin:-4,xmax:6,ymin:-6,ymax:5,
+     curves:[{fn:x=>4-(x-1)*(x-1),x0:-2,x1:4,n:200}],
+     dots:[[-2,-5,1],[4,-5,0]]},
+  r:{dom:']-2,4]',ran:'[-5,4]',inc:']-2,1[',dec:']1,4[',con:'no tiene',ix:'{(-1,0), (3,0)}',iy:'{(0,3)}',ge:'[-1,3]',lt:']-2,-1[ ∪ ]3,4]',eq:'{-1, 3}'}
+ },
+ { // 4. Valor absoluto invertido
+  g:{xmin:-7,xmax:6,ymin:-4,ymax:4,
+     curves:[{pts:[[-6,-2],[-1,3],[5,-3]],aS:1,aE:1}]},
+  r:{dom:'ℝ',ran:']-∞,3]',inc:']-∞,-1[',dec:']-1,+∞[',con:'no tiene',ix:'{(-4,0), (2,0)}',iy:'{(0,2)}',ge:'[-4,2]',lt:']-∞,-4[ ∪ ]2,+∞[',eq:'{-4, 2}'}
+ },
+ { // 5. Raíz decreciente
+  g:{xmin:-5,xmax:10,ymin:-3,ymax:4,
+     curves:[{fn:x=>3-sq(x+4),x0:-4,x1:9,n:300,aE:1}],
+     dots:[[-4,3,0]]},
+  r:{dom:'[-4,+∞[',ran:']-∞,3]',inc:'no tiene',dec:']-4,+∞[',con:'no tiene',ix:'{(5,0)}',iy:'{(0,1)}',ge:'[-4,5]',lt:']5,+∞[',eq:'{5}'}
+ },
+ { // 6. Hipérbola
+  nota:'Las rectas punteadas son sus asíntotas.',
+  g:{xmin:-6,xmax:7,ymin:-5,ymax:6,
+     curves:[{fn:x=>2/(x-1)+1,x0:-6,x1:0.96,n:500,aS:1},{fn:x=>2/(x-1)+1,x0:1.04,x1:6,n:500,aE:1}],
+     lines:[[1,-5,1,6],[-6,1,7,1]]},
+  r:{dom:'ℝ-{1}',ran:'ℝ-{1}',inc:'no tiene',dec:']-∞,1[ ∪ ]1,+∞[',con:'no tiene',ix:'{(-1,0)}',iy:'{(0,-1)}',ge:']-∞,-1] ∪ ]1,+∞[',lt:']-1,1[',eq:'{-1}'}
+ },
+ { // 7. Semicircunferencia + recta (escala igual en ambos ejes)
+  g:{xmin:-4,xmax:6,ymin:-3,ymax:4,ux:36,uy:36,
+     curves:[{fn:x=>sq(Math.max(0,9-x*x)),x0:-3,x1:3,n:600},{pts:[[3,0],[5,-2]]}],
+     dots:[[-3,0,0],[5,-2,0]]},
+  r:{dom:'[-3,5]',ran:'[-2,3]',inc:']-3,0[',dec:']0,5[',con:'no tiene',ix:'{(-3,0), (3,0)}',iy:'{(0,3)}',ge:'[-3,3]',lt:']3,5]',eq:'{-3, 3}'}
+ },
+ { // 8. Cúbica
+  g:{xmin:-2,xmax:5,ymin:-4,ymax:8,
+     curves:[{fn:x=>x*(x-3)*(x-3),x0:-2,x1:5,n:500}]},
+  r:{dom:'ℝ',ran:'ℝ',inc:']-∞,1[ ∪ ]3,+∞[',dec:']1,3[',con:'no tiene',ix:'{(0,0), (3,0)}',iy:'{(0,0)}',ge:'[0,+∞[',lt:']-∞,0[',eq:'{0, 3}'}
+ }
+];
+
+/* ===== Dibujo de gráficas (SVG) ===== */
+function graficar(cfg, id){
+  const ux = cfg.ux || 34, uy = cfg.uy || 30;
+  const ml=28, mr=30, mt=18, mb=26;
+  const W=(cfg.xmax-cfg.xmin)*ux, H=(cfg.ymax-cfg.ymin)*uy;
+  const X=x=>ml+(x-cfg.xmin)*ux, Y=y=>mt+(cfg.ymax-y)*uy;
+  const f=n=>Math.round(n*100)/100;
+  let s=`<svg class="grafica" viewBox="0 0 ${W+ml+mr} ${H+mt+mb}" style="max-width:${W+ml+mr}px" role="img" aria-label="Gráfica de la función f del ejercicio ${id}" xmlns="http://www.w3.org/2000/svg">`;
+  s+=`<defs><clipPath id="c${id}"><rect x="${ml}" y="${mt}" width="${W}" height="${H}"/></clipPath></defs>`;
+  // cuadrícula
+  s+=`<g stroke="#b9c0ca" stroke-width="1" stroke-dasharray="4 3">`;
+  for(let i=Math.ceil(cfg.xmin);i<=cfg.xmax;i++) s+=`<line x1="${f(X(i))}" y1="${mt}" x2="${f(X(i))}" y2="${mt+H}"/>`;
+  for(let j=Math.ceil(cfg.ymin);j<=cfg.ymax;j++) s+=`<line x1="${ml}" y1="${f(Y(j))}" x2="${ml+W}" y2="${f(Y(j))}"/>`;
+  s+=`</g>`;
+  // asíntotas
+  (cfg.lines||[]).forEach(l=>{ s+=`<line x1="${f(X(l[0]))}" y1="${f(Y(l[1]))}" x2="${f(X(l[2]))}" y2="${f(Y(l[3]))}" stroke="#6b7480" stroke-width="1.6" stroke-dasharray="6 5"/>`; });
+  // ejes
+  const x0=X(0), y0=Y(0);
+  s+=`<g stroke="#1b2430" stroke-width="1.3" fill="#1b2430">`;
+  s+=`<line x1="${ml}" y1="${f(y0)}" x2="${ml+W}" y2="${f(y0)}"/><line x1="${f(x0)}" y1="${mt+H}" x2="${f(x0)}" y2="${mt}"/>`;
+  s+=`<polygon stroke="none" points="${ml+W+7},${f(y0)} ${ml+W-2},${f(y0)-3.5} ${ml+W-2},${f(y0)+3.5}"/>`;
+  s+=`<polygon stroke="none" points="${f(x0)},${mt-7} ${f(x0)-3.5},${mt+2} ${f(x0)+3.5},${mt+2}"/>`;
+  for(let i=Math.ceil(cfg.xmin);i<=cfg.xmax;i++) if(i!==0) s+=`<line x1="${f(X(i))}" y1="${f(y0)-3}" x2="${f(X(i))}" y2="${f(y0)+3}"/>`;
+  for(let j=Math.ceil(cfg.ymin);j<=cfg.ymax;j++) if(j!==0) s+=`<line x1="${f(x0)-3}" y1="${f(Y(j))}" x2="${f(x0)+3}" y2="${f(Y(j))}"/>`;
+  s+=`</g>`;
+  // rótulos
+  s+=`<g font-size="10" fill="#1b2430" font-family="Arial,Helvetica,sans-serif">`;
+  for(let i=Math.ceil(cfg.xmin);i<=cfg.xmax;i++) if(i!==0) s+=`<text x="${f(X(i))}" y="${f(y0)+14}" text-anchor="middle">${String(i).replace('-','−')}</text>`;
+  for(let j=Math.ceil(cfg.ymin);j<=cfg.ymax;j++) if(j!==0) s+=`<text x="${f(x0)-6}" y="${f(Y(j))+3.5}" text-anchor="end">${String(j).replace('-','−')}</text>`;
+  s+=`<text x="${f(x0)-6}" y="${f(y0)+13}" text-anchor="end">0</text>`;
+  s+=`<text x="${ml+W+14}" y="${f(y0)+4}" font-style="italic" font-size="13" font-family="Georgia,serif">x</text>`;
+  s+=`<text x="${f(x0)+10}" y="${mt-5}" font-style="italic" font-size="13" font-family="Georgia,serif">y</text>`;
+  s+=`</g>`;
+  // curvas
+  let arrows='';
+  s+=`<g clip-path="url(#c${id})" fill="none" stroke="#111" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round">`;
+  (cfg.curves||[]).forEach(c=>{
+    let pts=c.pts;
+    if(!pts){ pts=[]; const n=c.n||200; for(let k=0;k<=n;k++){ const x=c.x0+(c.x1-c.x0)*k/n; const y=c.fn(x); if(isFinite(y)) pts.push([x,y]); } }
+    const P=pts.map(p=>[X(p[0]),Y(p[1])]);
+    s+=`<path d="M${P.map(p=>f(p[0])+' '+f(p[1])).join(' L')}"/>`;
+    const tip=(A,B)=>{ // flecha en A, apuntando desde B hacia A
+      let dx=A[0]-B[0], dy=A[1]-B[1]; const L=Math.hypot(dx,dy)||1; dx/=L; dy/=L;
+      const bx=A[0]-dx*11, by=A[1]-dy*11, px=-dy*4.8, py=dx*4.8;
+      return `<polygon points="${f(A[0])},${f(A[1])} ${f(bx+px)},${f(by+py)} ${f(bx-px)},${f(by-py)}" fill="#111" stroke="none"/>`;
+    };
+    const far=(arr,from)=>{ // punto del trazado a >= 6 px del extremo
+      const a=arr[from]; const step=from===0?1:-1;
+      for(let i=from+step;i>=0&&i<arr.length;i+=step){ if(Math.hypot(arr[i][0]-a[0],arr[i][1]-a[1])>=6) return arr[i]; }
+      return arr[from+step]||a;
+    };
+    if(c.aE) arrows+=tip(P[P.length-1],far(P,P.length-1));
+    if(c.aS) arrows+=tip(P[0],far(P,0));
+  });
+  s+=`</g>`+arrows;
+  // puntos
+  (cfg.dots||[]).forEach(d=>{
+    s+=`<circle cx="${f(X(d[0]))}" cy="${f(Y(d[1]))}" r="4.4" fill="${d[2]?'#fff':'#111'}" stroke="#111" stroke-width="2"/>`;
+  });
+  return s+`</svg>`;
+}
+
+/* ===== Construcción de la página ===== */
+const cont=document.getElementById('ejercicios');
+EJ.forEach((e,i)=>{
+  const n=i+1;
+  const art=document.createElement('article'); art.className='ejer'; art.id='ej'+n;
+  let h=`<h2>Ejercicio ${n}</h2><p>A continuación se muestra la gráfica de la función <i>f</i>:${e.nota?' '+e.nota:''}</p>`;
+  h+=`<div class="graf">${graficar(e.g,n)}</div><p>De acuerdo con los datos de la gráfica anterior determine:</p><div class="campos">`;
+  CAMPOS.forEach(c=>{
+    const id=`e${n}_${c.id}`;
+    h+=`<div class="campo"><label for="${id}">${c.et}:</label><div class="entrada"><input id="${id}" data-e="${n}" data-c="${c.id}" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="${c.ph}"><span class="marca" aria-hidden="true"></span></div><div class="sol" hidden><b>Respuesta:</b> ${e.r[c.id]}</div></div>`;
+  });
+  h+=`</div><div class="fila-btn"><button type="button" class="btn pri" data-a="rev" data-e="${n}">Revisar</button><button type="button" class="btn" data-a="ver" data-e="${n}">Ver respuestas</button><button type="button" class="btn" data-a="bor" data-e="${n}">Borrar</button><span class="res" id="res${n}" aria-live="polite"></span></div>`;
+  art.innerHTML=h; cont.appendChild(art);
+});
+
+/* ===== Lógica ===== */
+const CT=Object.fromEntries(CAMPOS.map(c=>[c.id,c.tipo]));
+const KEY='practica-graficas-v1';
+const inputs=()=>[...document.querySelectorAll('.entrada input')];
+const del=n=>[...document.querySelectorAll(`#ej${n} .entrada input`)];
+const resultados={};
+
+function guardar(){ try{ const o={}; inputs().forEach(i=>{ if(i.value) o[i.id]=i.value; }); localStorage.setItem(KEY,JSON.stringify(o)); }catch(_){} }
+function cargar(){ try{ const o=JSON.parse(localStorage.getItem(KEY)||'{}'); inputs().forEach(i=>{ if(o[i.id]) i.value=o[i.id]; }); }catch(_){} }
+function limpiaMarca(i){ i.classList.remove('ok','bad'); const m=i.parentNode.querySelector('.marca'); m.textContent=''; m.className='marca'; }
+function marca(i,ok){ i.classList.remove('ok','bad'); i.classList.add(ok?'ok':'bad'); const m=i.parentNode.querySelector('.marca'); m.textContent=ok?'✓':'✗'; m.className='marca '+(ok?'ok':'bad'); }
+function totalMostrar(){
+  const hechos=Object.keys(resultados).length; if(!hechos){ document.getElementById('puntaje').textContent=''; return; }
+  const p=Object.values(resultados).reduce((a,b)=>a+b,0);
+  document.getElementById('puntaje').textContent=`${p} / ${hechos*10}`;
+}
+function revisar(n){
+  let ok=0;
+  del(n).forEach(i=>{
+    const v=i.value.trim();
+    if(!v){ limpiaMarca(i); return; }
+    const bien=Checker.check(CT[i.dataset.c], v, EJ[n-1].r[i.dataset.c]);
+    marca(i,bien); if(bien) ok++;
+  });
+  resultados[n]=ok; document.getElementById('res'+n).textContent=`Resultado: ${ok} / 10`; totalMostrar();
+}
+function verRespuestas(n,mostrar){
+  document.querySelectorAll(`#ej${n} .sol`).forEach(s=>s.hidden=!mostrar);
+  const b=document.querySelector(`#ej${n} [data-a="ver"]`); b.textContent=mostrar?'Ocultar respuestas':'Ver respuestas';
+}
+function borrar(n){
+  del(n).forEach(i=>{ i.value=''; limpiaMarca(i); });
+  delete resultados[n]; document.getElementById('res'+n).textContent=''; totalMostrar(); guardar();
+}
+
+cont.addEventListener('click',ev=>{
+  const b=ev.target.closest('button[data-a]'); if(!b) return;
+  const n=+b.dataset.e, a=b.dataset.a;
+  if(a==='rev') revisar(n);
+  if(a==='ver') verRespuestas(n, b.textContent.trim()==='Ver respuestas');
+  if(a==='bor') borrar(n);
+});
+cont.addEventListener('input',ev=>{ if(ev.target.matches('.entrada input')){ limpiaMarca(ev.target); guardar(); } });
+
+document.getElementById('revTodo').onclick=()=>EJ.forEach((_,i)=>revisar(i+1));
+document.getElementById('verTodo').onclick=ev=>{
+  const mostrar=ev.target.textContent.trim()==='Ver respuestas';
+  EJ.forEach((_,i)=>verRespuestas(i+1,mostrar));
+  ev.target.textContent=mostrar?'Ocultar respuestas':'Ver respuestas';
+};
+document.getElementById('borTodo').onclick=()=>{ if(confirm('¿Borrar todas sus respuestas?')) EJ.forEach((_,i)=>borrar(i+1)); };
+
+/* Botones de símbolos: insertan en el último campo usado */
+let ultimo=null;
+document.addEventListener('focusin',e=>{ if(e.target.matches('.entrada input')) ultimo=e.target; });
+document.querySelectorAll('.simbolos button').forEach(b=>{
+  b.addEventListener('mousedown',e=>e.preventDefault());
+  b.addEventListener('click',()=>{
+    if(!ultimo) return;
+    const t=b.dataset.ins, i=ultimo, s=i.selectionStart??i.value.length, f=i.selectionEnd??i.value.length;
+    i.value=i.value.slice(0,s)+t+i.value.slice(f); i.focus();
+    const p=s+t.length; i.setSelectionRange(p,p); i.dispatchEvent(new Event('input',{bubbles:true}));
+  });
+});
+cargar();
+</script>
+</body>
+</html>
